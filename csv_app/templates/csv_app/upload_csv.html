@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.CSV Task</title>
+    <style>
+        /* Basic styling for the modal */
+        .dataModal {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modalContent {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+        .closeModal {
+            position:fixed;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .modalDataContainer {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <form action="{% url 'file_input' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file_x">Select a file:</label>
+        <input type="file" name="file_x" id="file_x" accept=".csv , text/csv" required>
+        <button type="submit" name="btn_csv" id="btn_csv_submit" value="submit">Submit</button>
+
+        
+    </form>
+    <form id="form_show" action="{% url 'files' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" name="btn_csv"  id="btn_csv_show" value="show">show files</button>
+    </form>
+    <div id="div_tag">
+        
+    </div>
+
+    <script>
+        var dataurl = "{% url 'f_data' %}";
+        var csrftoken = "{{ csrf_token }}";
+       
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'csv/ajex_csv.js' %}"></script>
+    
+</body>
+</html>
