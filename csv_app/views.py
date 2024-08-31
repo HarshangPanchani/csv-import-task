@@ -48,17 +48,17 @@ class get_file(View):
     def f_show(request):
         rows=""
         rows_dict=""
-        logger.debug("show_clicked")
+        # logger.debug("show_clicked")
         button_c = request.POST.get('btn_csv')
         
-        logger.debug(button_c)
+        # logger.debug(button_c)
         
         with connection.cursor() as cs:
                 cs.execute("SELECT * FROM tbl_mng order by id")
                 rows=cs.fetchall()
                 rows_dict =[ {'id': row[0],'file_name':row[1],'f_datetime': row[2]} for row in rows]    
-                for row in rows:    
-                    logger.debug(str(row[2]))
+                # for row in rows:    
+                    # logger.debug(str(row[2]))
                 
                 #html_d= render_to_string('csv_app/upload_csv.html',{'rows':rows_dict}) 
         return JsonResponse({'rows':rows_dict})
@@ -66,28 +66,69 @@ class get_file(View):
         # return render(request,'csv_app/upload_csv.html',{'rows':rows_dict})
     def d_show(request):
         btnclicked = request.POST.get('fname')
-        logger.debug("hiii")
-        logger.debug(request.POST)
-        logger.debug(btnclicked)
+        # logger.debug("hiii")
+        # logger.debug(request.POST)
+        # logger.debug(btnclicked)
         tname= btnclicked.replace(".csv","")
         with connection.cursor() as cs:
-            cs.execute(f"SELECT * FROM {tname}")
-            data_rows_temp =cs.fetchall()
+            cs.execute(f"SELECT * FROM {tname};")
+            data_rows =cs.fetchall()
             col_name =[  col[0] for col in cs.description]
-            cs.execute(f"SELECT * FROM {tname} ORDER BY {col_name[0]}")
-            data_rows=cs.fetchall()
-            logger.debug(len(col_name))
+            # cs.execute(f"SELECT * FROM {tname} ORDER BY {col_name[0]};")
+            # data_rows=cs.fetchall()
+            # logger.debug(len(col_name))
             
         data_dict = [dict(zip(col_name,rows)) for rows in data_rows]
             
-            
         
-        logger.debug(data_dict)
+        
+        # logger.debug(data_dict)
 
         
         return JsonResponse({"data_col": col_name,"data": data_dict})
+    def insertdata(request):
+        # logger.debug(request.POST)
+        fname= request.POST.get('f_name')
+        tname=fname.replace(".csv","")
+        with connection.cursor() as c:
+            c.execute(f"SELECT * FROM {tname};")
+            dat= c.fetchall()
+            columns=[colu[0] for colu in c.description]
+            data=[request.POST.get(f'{col}') for col in columns]
+            colu= ",".join(col for col in columns)
+            dat=",".join(f"'{da}'" for da in data)
+            c.execute(f"INSERT INTO {tname} ({colu}) VALUES ({dat});")
+            # logger.debug(columns)
+            c.execute(f"SELECT * FROM {tname};")
+            data_rows= c.fetchall()
+        data_dict= [dict(zip(columns,rows)) for rows in data_rows]
+        logger.debug(data)
+        return JsonResponse({"data_col": columns,"data": data_dict})
+    
+    def update_btn(request):
+        return JsonResponse({"hi":"hi"})
+    
+    def update(request):
+        logger.debug(request.POST)
+        tname= request.POST.get('tname')
+        with connection.cursor() as c:
+            c.execute(f"SELECT * FROM {tname};")
+            dat= c.fetchall()
+            columns=[colu[0] for colu in c.description]
+            data=[request.POST.get(f'{col}') for col in columns]
+            assign= ", ".join((f'{co} = \'{da}\'' )for co,da in zip(columns,data))
+            cond=assign.split(",")
+            # logger.debug(cond[0])
+            c.execute(f"UPDATE {tname} SET {assign} WHERE {cond[0]};")
+            logger.debug(data)
+            logger.debug(assign)
+            c.execute(f"SELECT * FROM {tname}")
+            data_rows= c.fetchall()
+            data_dict= [dict(zip(columns,rows)) for rows in data_rows]
 
 
+
+        return JsonResponse({"data_col": columns, "data": data_dict})
 
     def get(self,request,*args,**kwargs):
         return render(request,'csv_app/upload_csv.html')

@@ -13,7 +13,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0);
+            background-color: rgb(213, 213, 213);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -38,6 +38,7 @@
             overflow-y: auto;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <form action="{% url 'file_input' %}" method="post" enctype="multipart/form-data">
@@ -53,15 +54,16 @@
         <button type="submit" name="btn_csv"  id="btn_csv_show" value="show">show files</button>
     </form>
     <div id="div_tag">
-        
     </div>
 
     <script>
         var dataurl = "{% url 'f_data' %}";
         var csrftoken = "{{ csrf_token }}";
-       
+        var inserturl = "{% url 'insert_data' %}";
+        var updatebtnurl ="{% url 'update_btn' %}";
+        var updateurl ="{% url 'update' %}";
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <script src="{% static 'csv/ajex_csv.js' %}"></script>
     
 </body>
